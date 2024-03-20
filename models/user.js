@@ -23,3 +23,5 @@ const userSchema = new mongoose.Schema(
   // to record time of creation and updation of user
   { timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" } }
 );
+
+module.exports = mongoose.model("User", userSchema);
