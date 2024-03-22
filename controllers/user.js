@@ -1,5 +1,6 @@
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 // Register User API (with user data and password encryption)
 const registerUser = async (req, res) => {
@@ -37,7 +38,7 @@ const registerUser = async (req, res) => {
   }
 };
 
-// Login User API (User Details check and Password Match)
+// Login User API (User Details check and Password Match with JWT token generation)
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -51,7 +52,7 @@ const loginUser = async (req, res) => {
     const userDetails = await User.findOne({ email });
 
     if (!userDetails) {
-      return res.status(401).json({ errorMessage: "Invalid Credentials!" });
+      return res.status(401).json({ errorMessage: "User Doesn't exists!" });
     }
 
     const passwordMatch = await bcrypt.compare(password, userDetails.password);
@@ -60,7 +61,18 @@ const loginUser = async (req, res) => {
       return res.status(401).json({ errorMessage: "Invalid Credentials!" });
     }
 
-    res.json({ message: "User Logged In!" });
+    // generation of token
+    const token = jwt.sign(
+      { userId: userDetails._id, name: userDetails.name },
+      process.env.SECRET_CODE,
+      { expiresIn: "60d" }
+    );
+
+    res.json({
+      message: "User Logged In!",
+      token: token,
+      name: userDetails.name,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({ errorMessage: "Something went wrong!" });

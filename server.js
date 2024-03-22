@@ -2,6 +2,8 @@ const express = require("express");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const authRoute = require("./routes/auth");
+const jobRoute = require("./routes/job");
+const verifyToken = require("./middlewares/verifyToken");
 
 dotenv.config();
 
@@ -26,6 +28,7 @@ app.get("/api/health", (req, res) => {
 
 // Middleware
 app.use("/api/v1/auth", authRoute);
+app.use("/api/v1/job", jobRoute);
 
 app.listen(PORT, () => {
   console.log(`Backend server running at port: ${PORT}`);
