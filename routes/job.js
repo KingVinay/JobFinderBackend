@@ -7,4 +7,6 @@ router.post("/create", verifyToken, jobController.createJobPost);
 
 router.get("/job-details/:jobId", jobController.getJobDetailsById);
 
+router.put("/update/:jobId", verifyToken, jobController.updateJobDetailsById);
+
 module.exports = router;
