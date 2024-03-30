@@ -1,7 +1,7 @@
 const Job = require("../models/job");
 
 // CreateJobPost Api with job details saved to database fetched from body and refuserId from verifyToken middleware from generated json web token
-const createJobPost = async (req, res) => {
+const createJobPost = async (req, res, next) => {
   try {
     const {
       companyName,
@@ -51,14 +51,13 @@ const createJobPost = async (req, res) => {
     await jobDetails.save();
     res.json({ message: "Job Created Successfully" });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ errorMessage: "Something went wrong!" });
+    next(error);
   }
 };
 
 //getJobDetailsById api works by fetching jobId  using findById() yo check whether a job exists wrt jobId or not
 
-const getJobDetailsById = async (req, res) => {
+const getJobDetailsById = async (req, res, next) => {
   try {
     const jobId = req.params.jobId;
 
@@ -72,14 +71,13 @@ const getJobDetailsById = async (req, res) => {
 
     res.json({ data: jobDetails });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ errorMessage: "Something went wrong!" });
+    next(error);
   }
 };
 
 // updateJobDetailsById api works by precheck through verifyToken middleware then fetching jobId and userId and using findOne() finding whether a job exists wrt them and fetching data to update form body finally updating using updateOne() with $set parameter to change data in database
 
-const updateJobDetailsById = async (req, res) => {
+const updateJobDetailsById = async (req, res, next) => {
   try {
     const jobId = req.params.jobId;
     const userId = req.userId;
@@ -147,9 +145,51 @@ const updateJobDetailsById = async (req, res) => {
 
     res.json({ message: "Job updated successfully!" });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ errorMessage: "Something went wrong!" });
+    next(error);
   }
 };
 
-module.exports = { createJobPost, getJobDetailsById, updateJobDetailsById };
+const getAllJobs = async (req, res, next) => {
+  try {
+    const jobList = await Job.find({}, { companyName: 1, title: 1 });
+    res.json({ data: jobList });
+  } catch (error) {
+    next(error);
+  }
+};
+
+//
+
+const deleteJobPost = async (req, res, next) => {
+  try {
+    const jobId = req.params.jobId;
+
+    if (!jobId) {
+      return res.status(400).json({
+        message: "Bad request!",
+      });
+    }
+
+    const isJobExists = Job.findOne({ _id: jobId });
+
+    if (!isJobExists) {
+      return res.status(400).json({
+        errorMessage: "Bad request",
+      });
+    }
+
+    await Job.deleteOne({ _id: jobId });
+
+    res.json({ message: "Job Post deleted Successfully!" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = {
+  createJobPost,
+  getJobDetailsById,
+  updateJobDetailsById,
+  getAllJobs,
+  deleteJobPost,
+};

@@ -30,6 +30,16 @@ app.get("/api/health", (req, res) => {
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/job", jobRoute);
 
+app.use("*", (req, res) => {
+  res.status(401).json({ errorMessage: "Route not found!" });
+});
+
+// Middleware for catch block error statements
+app.use((error, req, res, next) => {
+  console.log(error);
+  res.status(500).json({ errorMessage: "Something went wrong!" });
+});
+
 app.listen(PORT, () => {
   console.log(`Backend server running at port: ${PORT}`);
 });
