@@ -88,8 +88,7 @@ const updateJobDetailsById = async (req, res, next) => {
       });
     }
 
-    // bug in below statement
-    const isJobExists = Job.findOne({ _id: jobId, refUserId: userId });
+    const isJobExists = await Job.findOne({ _id: jobId, refUserId: userId });
 
     if (!isJobExists) {
       return res.status(400).json({
@@ -151,7 +150,12 @@ const updateJobDetailsById = async (req, res, next) => {
 
 const getAllJobs = async (req, res, next) => {
   try {
-    const jobList = await Job.find({}, { companyName: 1, title: 1 });
+    // filter by title
+    const title = req.query.title || "";
+    const jobList = await Job.find(
+      { title: { $regex: title, $options: "i" } },
+      { companyName: 1, title: 1 }
+    );
     res.json({ data: jobList });
   } catch (error) {
     next(error);
