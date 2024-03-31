@@ -152,8 +152,23 @@ const getAllJobs = async (req, res, next) => {
   try {
     // filter by title
     const title = req.query.title || "";
+    const skills = req.query.skills;
+    let filteredskills;
+    let filter = {};
+
+    if (skills) {
+      filteredskills = skills.split(",");
+      const caseInsensitiveFilteredSkills = filteredskills.map(
+        (element) => new RegExp(element, "i")
+      );
+      filter = { skills: { $in: caseInsensitiveFilteredSkills } };
+    }
+
     const jobList = await Job.find(
-      { title: { $regex: title, $options: "i" } },
+      {
+        title: { $regex: title, $options: "i" },
+        ...filter,
+      },
       { companyName: 1, title: 1 }
     );
     res.json({ data: jobList });
