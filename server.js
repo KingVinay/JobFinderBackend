@@ -8,7 +8,10 @@ const verifyToken = require("./middlewares/verifyToken");
 dotenv.config();
 
 const app = express();
-const PORT = 3000;
+const PORT = 4000;
+
+const cors = require("cors");
+app.use(cors());
 
 app.use(express.json());
 
@@ -27,8 +30,8 @@ app.get("/api/health", (req, res) => {
 });
 
 // Middleware
-app.use("/api/v1/auth", authRoute);
-app.use("/api/v1/job", jobRoute);
+app.use("/api/auth", authRoute);
+app.use("/api/job", jobRoute);
 
 app.use("*", (req, res) => {
   res.status(401).json({ errorMessage: "Route not found!" });
