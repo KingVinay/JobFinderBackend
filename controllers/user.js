@@ -70,6 +70,7 @@ const loginUser = async (req, res) => {
 
     res.json({
       message: "User Logged In!",
+      userId: userDetails._id,
       token: token,
       name: userDetails.name,
     });
