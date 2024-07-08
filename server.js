@@ -1,48 +1,43 @@
+require("dotenv").config();
 const express = require("express");
-const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const authRoute = require("./routes/auth");
 const jobRoute = require("./routes/job");
-const verifyToken = require("./middlewares/verifyToken");
-
-dotenv.config();
+const cors = require("cors");
 
 const app = express();
-const PORT = 4000;
-
-const cors = require("cors");
-app.use(cors());
 
 app.use(express.json());
+app.use(cors());
 
-mongoose
-  .connect(process.env.MONGO_URL)
-  .then(() => console.log("DB Connected!"))
-  .catch((error) => console.log("DB failed to connect!", error));
-
-app.get("/api/health", (req, res) => {
-  console.log("hey health");
+app.get("/health", (req, res) => {
+  console.log("I am in health api");
   res.json({
-    service: "Backend joblisting server",
-    staus: "active",
+    service: "Backend Job Listing API Server",
+    status: "active",
     time: new Date(),
   });
 });
 
-// Middleware
-app.use("/api/auth", authRoute);
-app.use("/api/job", jobRoute);
+app.use("/api/v1/auth", authRoute);
+app.use("/api/v1/job", jobRoute);
 
-app.use("*", (req, res) => {
-  res.status(401).json({ errorMessage: "Route not found!" });
-});
-
-// Middleware for catch block error statements
 app.use((error, req, res, next) => {
   console.log(error);
   res.status(500).json({ errorMessage: "Something went wrong!" });
 });
 
+mongoose
+  .connect(process.env.MONGODB_URI)
+  .then(() => {
+    console.log("Db connected!");
+  })
+  .catch((error) => {
+    console.log("Db failed to connect", error);
+  });
+
+const PORT = 4000;
+
 app.listen(PORT, () => {
-  console.log(`Backend server running at port: ${PORT}`);
+  console.log(`Backend server listening at port: ${PORT}`);
 });
