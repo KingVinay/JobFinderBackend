@@ -15,6 +15,7 @@ const createJobPost = async (req, res, next) => {
       skills,
       jobType,
       information,
+      about,
     } = req.body;
 
     if (
@@ -28,7 +29,8 @@ const createJobPost = async (req, res, next) => {
       !locationType ||
       !skills ||
       !jobType ||
-      !information
+      !information ||
+      !about
     ) {
       return res.status(400).json({
         errorMessage: "Bad request",
@@ -47,6 +49,7 @@ const createJobPost = async (req, res, next) => {
       skills,
       jobType,
       information,
+      about,
       refUserId: currentUserId,
     });
 
@@ -95,6 +98,7 @@ const updateJobDetailsById = async (req, res, next) => {
       skills,
       jobType,
       information,
+      about,
     } = req.body;
 
     if (
@@ -108,7 +112,8 @@ const updateJobDetailsById = async (req, res, next) => {
       !locationType ||
       !skills ||
       !jobType ||
-      !information
+      !information ||
+      !about
     ) {
       return res.status(400).json({
         errorMessage: "Bad request",
@@ -146,6 +151,7 @@ const updateJobDetailsById = async (req, res, next) => {
           skills,
           jobType,
           information,
+          about,
         },
       }
     );
