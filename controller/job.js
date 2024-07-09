@@ -161,6 +161,31 @@ const updateJobDetailsById = async (req, res, next) => {
   }
 };
 
+const deleteJobPost = async (req, res, next) => {
+  try {
+    const jobId = req.params.jobId;
+
+    if (!jobId) {
+      return res.status(400).json({
+        errorMessage: "Bad Request",
+      });
+    }
+
+    const isJobExists = await Job.findOne({ _id: jobId });
+
+    if (!isJobExists) {
+      return res.status(400).json({
+        errorMessage: "Bad Request",
+      });
+    }
+
+    const job = await Job.findByIdAndDelete(jobId);
+    res.json({ message: "Job deleted successfully!" });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const getAllJobs = async (req, res, next) => {
   try {
     const searchQuery = req.query.searchQuery || "";
@@ -197,5 +222,6 @@ module.exports = {
   createJobPost,
   getJobDetailsById,
   updateJobDetailsById,
+  deleteJobPost,
   getAllJobs,
 };
